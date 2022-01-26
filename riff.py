@@ -79,3 +79,4 @@ for i in range(0, 8):
 		note = note_list[note_ind] 
 		print(key[note])
 
+print("HELLO!!!")
