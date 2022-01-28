@@ -84,3 +84,8 @@ for i in continuation_notes:
 print(beats)
 print(notes)
 
+
+# next steps: 
+	# allow for multiple keys
+	# find a way to get this into notation
+	# midi!
