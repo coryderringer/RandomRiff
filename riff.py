@@ -65,7 +65,7 @@ note_list.append([8]*note_weights[7])
 
 note_list = flatten(note_list)
 
-notes = [0] * len(beats)
+notes = ['r'] * len(beats)
 
 
 # thanks stack overflow https://stackoverflow.com/questions/6294179/how-to-find-all-occurrences-of-an-element-in-a-list
@@ -73,13 +73,13 @@ indices = [i for i, x in enumerate(beats) if x == 1]
 
 for i in range(0, len(indices)):
 	note = note_list[random.randrange(0,len(note_list))]
-	notes[indices[i]] = note
+	notes[indices[i]] = key[note-1]
 
 # number of notes that continue from a previous 16th slot
 continuation_notes = [i for i, x in enumerate(beats) if x == 2]
 for i in continuation_notes:
-	notes[i] = notes[i-1]
-	
+	notes[i] = notes[i-1].lower() # continued notes are lower case
+
 
 print(beats)
 print(notes)
