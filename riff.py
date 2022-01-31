@@ -8,8 +8,6 @@ import random, argparse
 
 # argument parsing
 parser = argparse.ArgumentParser(description = "Generate a random riff using a given key/scale")
-# parser.parse_args()
-
 
 parser.add_argument("key", 
 	help = "Desired key, capital letter currently required, sharp/flat = s/b. E.g., A, As, Bb...",
@@ -25,6 +23,7 @@ parser.add_argument("--numericMode",
 	type = int,
 	choices = range(1,8))
 
+# access arguments like this: args.key, args.mode, args.time, etc.
 args = parser.parse_args()
 
 
