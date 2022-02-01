@@ -5,7 +5,7 @@
 # Eventually this will be part of a web app that will generate a riff with a 
 # given parameter set (e.g., 2 bars in 12/8 time in F Dorian).
 
-# First version generates one bar of 4/4.
+# First version generates one bar of 4/4 with a given key and mode.
 
 # libraries
 import random, argparse
