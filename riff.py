@@ -1,6 +1,6 @@
 # Cory Derringer
 # 2/1/22
-# This script randomly generates a riff using a given key and mode.
+# This script randomly generates a riff in abc notation using a given key and mode.
 
 # Eventually this will be part of a web app that will generate a riff with a 
 # given parameter set (e.g., 2 bars in 12/8 time in F Dorian).
@@ -14,8 +14,8 @@ import random, argparse
 parser = argparse.ArgumentParser(description = "Generate a random riff using a given key/scale")
 
 parser.add_argument("key", 
-	help = "Desired key, capital letter currently required, sharp/flat = s/b. E.g., A, As, Bb...",
-	choices = ['C', 'G', 'D', 'A', 'E', 'B', 'Fs', 'Db', 'Ab', 'Eb', 'Bb', 'F'])
+	help = "Desired key, capital letter currently required, sharp/flat = s/b. E.g., A, ^A, _B...",
+	choices = ['C', 'G', 'D', 'A', 'E', 'B', '^F', '_D', '_A', '_E', '_B', 'F'])
 parser.add_argument("--time", help = "Time signature of desired riff. Currently script only supports 4/4.", choices = ["4/4"])
 parser.add_argument("--mode", 
 	help = "Desired mode of the output riff. Default is Ionian. (Minor is Aeolian.)", 
@@ -36,17 +36,17 @@ def flatten(t):
 # important global variables/lists
 modes = ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrean"]
 key_list = [['C', 'D', 'E', 'F', 'G', 'A', 'B'],
-					['G', 'A', 'B', 'C', 'D', 'E', 'Fs'],
-					['D', 'E', 'Fs', 'G', 'A', 'B', 'Cs'],
-					['A', 'B', 'Cs', 'D', 'E', 'Fs', 'Gs'],
-					['E', 'Fs', 'Gs', 'A', 'B', 'Cs', 'Ds'],
-					['B', 'Cs', 'Ds', 'E', 'Fs', 'Gs', 'As'],
-					['Fs', 'Gs', 'As', 'B', 'Cs', 'Ds', 'Es',],
-					['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb', 'C',],
-					['Ab', 'Bb', 'C', 'Db', 'Eb', 'F', 'G',],
-					['Eb', 'F', 'G', 'Ab', 'Bb', 'C', 'D',],
-					['Bb', 'C', 'D', 'Eb', 'F', 'G', 'A',],
-					['F', 'G', 'A', 'Bb', 'C', 'D', 'E']]
+					['G', 'A', 'B', 'C', 'D', 'E', '^F'],
+					['D', 'E', '^F', 'G', 'A', 'B', '^C'],
+					['A', 'B', '^C', 'D', 'E', '^F', '^G'],
+					['E', '^F', '^G', 'A', 'B', '^C', '^D'],
+					['B', '^C', '^D', 'E', '^F', '^G', '^A'],
+					['^F', '^G', '^A', 'B', '^C', '^D', '^E',],
+					['_D', '_E', 'F', '_G', '_A', '_B', 'C',],
+					['_A', '_B', 'C', '_D', '_E', 'F', 'G',],
+					['_E', 'F', 'G', '_A', '_B', 'C', 'D',],
+					['_B', 'C', 'D', '_E', 'F', 'G', 'A',],
+					['F', 'G', 'A', '_B', 'C', 'D', 'E']]
 
 
 # Generate rhythm:
@@ -64,8 +64,9 @@ for i in range(0, 4):
 	for j in range(0, len(beats[i])):
 		if random.uniform(0,1) <= sixteenth_probs[j]:
 			beats[i][j] = 1
- 
+
 beats = flatten(beats)
+
 
 for i in range(0, len(beats)):
 	if(i < 15 and beats[i] == 1):
@@ -78,15 +79,23 @@ for i in range(0, len(beats)):
 			else:
 				a = 1
 
+# convert to a string (maybe we should switch so that it GENERATES as a string)
+beats_string = [str(x) for x in beats]
+beats_string = ''.join(beats_string)
+print(f"beats string: {beats_string}")
+
+
 # generate notes:
 mode_position = modes.index(args.mode)
 
+# notes to choose from:
 for i in key_list:
 	try:
 		if i.index(args.key) == mode_position:
+			ionian_key = i[0]
 			double_list = i + i
 			notes_in_key = double_list[mode_position:mode_position+8]
-			print(f"Pulling notes from the key of {i[0]}: {double_list[0:8]}")
+			print(f"Pulling notes from the key of {ionian_key}: {double_list[0:8]}")
 			break
 	except ValueError: 
 		# if the note we're looking for isn't in the key, move on to the next one
@@ -105,8 +114,10 @@ for i in note_weights:
 	for j in range(0, i):
 		note_list.append(note_weights.index(i)+1)
 
-notes = ['r'] * len(beats)
+notes = ['z'] * len(beats)
 
+
+# approach 1: get all beats with notes ahead of time, determine notes, place them.
 # thanks stack overflow https://stackoverflow.com/questions/6294179/how-to-find-all-occurrences-of-an-element-in-a-list
 # indices of all occurrences of 1 in the beats list:
 indices = [i for i, x in enumerate(beats) if x == 1]
@@ -121,8 +132,45 @@ for i in continuation_notes:
 	notes[i] = notes[i-1].lower() # continued notes are lower case
 
 
+# approach 2: iterate through beats:
+	# if 0, z
+	# if 1, generate note
+	# if 2, modify previous note to be longer
+
+# YOU ARE HERE 2/2/22
+
+
+# convert to abc:
+# we want this eventually to be a text file that we can export. 
+
+# metadata at the top of the abc file
+tune = 'X:1'
+title = 'T:Your Randomly Generated Riff'
+composer = 'C:RandomRiff'
+time_sig = 'M:C' # for now it's all 4/4
+key_sig = 'K:' + ionian_key
+
+
+# export file:
+abc_txt = [tune, title, composer, time_sig, key_sig, str(beats), str(notes)]
+with open('exported_abc.txt', 'w') as f:
+	f.write('\n'.join(abc_txt))
+
+
+
+
+
 # next steps: 
-	# find a way to get this into notation (https://abjad.github.io/)
+	# find a way to get this into notation 
+		# Oh this is cool as hell: https://www.abcjs.net/
+		# 1. Change RandomRiff to use abc notation because it's great
+		# 2. Embed this script in an index file, send the riff script to the front end to get picked up by abcjs.
+		# 3. Write the html/js for the front end
+			# Features:
+			# Generate a new riff
+			# Copy abc for the current riff to the clipboard
+			# Send midi
+			# Send image of sheet music
 	# midi!
 
 print(f"Notes in {args.key} {args.mode}: {notes_in_key}")
