@@ -47,7 +47,7 @@ key_list = [['C', 'D', 'E', 'F', 'G', 'A', 'B'],
 					['_E', 'F', 'G', '_A', '_B', 'C', 'D',],
 					['_B', 'C', 'D', '_E', 'F', 'G', 'A',],
 					['F', 'G', 'A', '_B', 'C', 'D', 'E']]
-
+L = 1/16 # standard note length is the 16th note
 
 # Generate rhythm:
 # each measure is 4 beats (man this really restricts us to 4/4)
@@ -137,7 +137,28 @@ for i in continuation_notes:
 	# if 1, generate note
 	# if 2, modify previous note to be longer
 
+notes = []
 # YOU ARE HERE 2/2/22
+for i in range(0, len(beats)):
+	if beats[i] == 1:
+		note = note_list[random.randrange(0, len(note_list))]
+		notes.append(notes_in_key[note-1])
+	elif beats[i] == 2:
+		# get appended number on the end of the prev note. Multiply it by 2.
+		# list
+		try:
+			list_note = list(notes[len(notes)-1]) 
+			print(f"list note: {list_note}")
+			n = 2*int(list_note[len(list_note)])
+			list_note[len(list_note)] = n
+			notes[len(notes)] = ''.join(list_note)
+		
+		except IndexError:
+			n = notes[len(notes)-1]+'2'
+			notes[len(notes)-1] = n
+	else:
+		notes.append('z')
+
 
 
 # convert to abc:
@@ -147,12 +168,14 @@ for i in continuation_notes:
 tune = 'X:1'
 title = 'T:Your Randomly Generated Riff'
 composer = 'C:RandomRiff'
-time_sig = 'M:C' # for now it's all 4/4
+length = 'L:1/16'
+time_sig = 'M:4/4' # for now it's all 4/4
 key_sig = 'K:' + ionian_key
+notes = '|'+''.join(notes)+'|'
 
 
 # export file:
-abc_txt = [tune, title, composer, time_sig, key_sig, str(beats), str(notes)]
+abc_txt = [tune, title, composer, length, time_sig, key_sig, notes]
 with open('exported_abc.txt', 'w') as f:
 	f.write('\n'.join(abc_txt))
 
@@ -178,3 +201,8 @@ print(f"Starting position: {mode_position+1}")
 print(f"Generating riff in {args.key} {args.mode}")
 print(f"Beats: {beats}")
 print(f"Notes: {notes}")
+
+
+# notes:
+
+# 2/3 looks like Bb doesn't work in the key signature later on, am I exporting it wrong?
