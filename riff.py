@@ -206,3 +206,4 @@ print(f"Notes: {notes}")
 # notes:
 
 # 2/3 looks like Bb doesn't work in the key signature later on, am I exporting it wrong?
+# Next step is to get it working on github pages! Added html to a folder called html, but it's not working yet
