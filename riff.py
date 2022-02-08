@@ -47,7 +47,7 @@ key_list = [['C', 'D', 'E', 'F', 'G', 'A', 'B'],
 					['_E', 'F', 'G', '_A', '_B', 'C', 'D',],
 					['_B', 'C', 'D', '_E', 'F', 'G', 'A',],
 					['F', 'G', 'A', '_B', 'C', 'D', 'E']]
-L = 1/16 # standard note length is the 16th note
+L = 1/8 # standard note length is the 16th note
 
 # Generate rhythm:
 # each measure is 4 beats (man this really restricts us to 4/4)
@@ -59,7 +59,7 @@ sixteenth_probs = [.8, .1, .4, .2] # prob of a note for each 16th
 
 beats = []
 for i in range(0, 4):
-	beats.append([0,0,0,0])
+	beats.append([0,0])
 
 	for j in range(0, len(beats[i])):
 		if random.uniform(0,1) <= sixteenth_probs[j]:
@@ -69,7 +69,7 @@ beats = flatten(beats)
 
 
 for i in range(0, len(beats)):
-	if(i < 15 and beats[i] == 1):
+	if(i < 7 and beats[i] == 1):
 		a = 0
 
 		while a == 0:
@@ -168,7 +168,7 @@ for i in range(0, len(beats)):
 tune = 'X:1'
 title = 'T:Your Randomly Generated Riff'
 composer = 'C:RandomRiff'
-length = 'L:1/16'
+length = 'L:1/8'
 time_sig = 'M:4/4' # for now it's all 4/4
 key_sig = 'K:' + ionian_key
 notes = '|'+''.join(notes)+'|'
@@ -196,12 +196,13 @@ with open('exported_abc.txt', 'w') as f:
 			# Send image of sheet music
 	# midi!
 
-print(f"Notes in {args.key} {args.mode}: {notes_in_key}")
-print(f"Starting position: {mode_position+1}")
-print(f"Generating riff in {args.key} {args.mode}")
-print(f"Beats: {beats}")
-print(f"Notes: {notes}")
+# print(f"Notes in {args.key} {args.mode}: {notes_in_key}")
+# print(f"Starting position: {mode_position+1}")
+# print(f"Generating riff in {args.key} {args.mode}")
+# print(f"Beats: {beats}")
+# print(f"Notes: {notes}")
 
+print('\n'.join(abc_txt))
 
 # notes:
 
