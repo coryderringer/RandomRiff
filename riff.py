@@ -47,23 +47,26 @@ key_list = [['C', 'D', 'E', 'F', 'G', 'A', 'B'],
 					['_E', 'F', 'G', '_A', '_B', 'C', 'D',],
 					['_B', 'C', 'D', '_E', 'F', 'G', 'A',],
 					['F', 'G', 'A', '_B', 'C', 'D', 'E']]
-L = 1/8 # standard note length is the 16th note
+L = 1/8 # standard note length is the 8th note
 
-# Generate rhythm:
-# each measure is 4 beats (man this really restricts us to 4/4)
-# each beat is 4 16th-note slots
+# Generate rhythm: which 8th-note "slots" will have notes in them?
+	# each measure is 4 beats (man this really restricts us to 4/4)
+	# each beat is 2 8th-note slots
 
 # TODO: figure out a way to get these probs into the arguments
-beat_note_probs = [.75, .25, .5, .25] # prob of note (vs rest) in quarter slots
-sixteenth_probs = [.8, .1, .4, .2] # prob of a note for each 16th
+beat_note_probs = [.8, .6, .7, .6] # prob of note (vs rest) in quarter slots
+subdivision_probs = [.75, .5] # prob of a note for each 16th
 
 beats = []
-for i in range(0, 4):
-	beats.append([0,0])
+for i in range(0, len(beat_note_probs)):
+	# beats.append([0,0])
+	beats.append([0]*len(subdivision_probs))
 
-	for j in range(0, len(beats[i])):
-		if random.uniform(0,1) <= sixteenth_probs[j]:
-			beats[i][j] = 1
+	if random.uniform(0,1) <= beat_note_probs[i]: # there is at least one note in this beat
+
+		for j in range(0, len(beats[i])):
+			if random.uniform(0,1) <= subdivision_probs[j]:
+				beats[i][j] = 1
 
 beats = flatten(beats)
 
@@ -114,41 +117,29 @@ for i in note_weights:
 	for j in range(0, i):
 		note_list.append(note_weights.index(i)+1)
 
-notes = ['z'] * len(beats)
-
-
-# approach 1: get all beats with notes ahead of time, determine notes, place them.
-# thanks stack overflow https://stackoverflow.com/questions/6294179/how-to-find-all-occurrences-of-an-element-in-a-list
-# indices of all occurrences of 1 in the beats list:
-indices = [i for i, x in enumerate(beats) if x == 1]
-
-for i in range(0, len(indices)):	
-	note = note_list[random.randrange(0,len(note_list))]
-	notes[indices[i]] = notes_in_key[note-1]
-
-# notes that continue from a previous 16th slot
-continuation_notes = [i for i, x in enumerate(beats) if x == 2]
-for i in continuation_notes:
-	notes[i] = notes[i-1].lower() # continued notes are lower case
-
-
-# approach 2: iterate through beats:
+# iterate through beats to generate notes. For each beat:
 	# if 0, z
 	# if 1, generate note
 	# if 2, modify previous note to be longer
 
 notes = []
-# YOU ARE HERE 2/2/22
 for i in range(0, len(beats)):
 	if beats[i] == 1:
-		note = note_list[random.randrange(0, len(note_list))]
+		# Same-note bias: if we have two 1s in a row, it should be more likely that they're the same note.
+		# Call it 60/40 for now, eventually we'll want to put this in the optional arguments.
+		same_note_bias = .6
+		if (len(notes) > 0) & (beats[i-1] == 1) & (random.uniform(0,1) <= same_note_bias):
+			pass # note stays the same as it was
+		else:
+			note = note_list[random.randrange(0, len(note_list))]
+	
 		notes.append(notes_in_key[note-1])
 	elif beats[i] == 2:
 		# get appended number on the end of the prev note. Multiply it by 2.
 		# list
 		try:
 			list_note = list(notes[len(notes)-1]) 
-			print(f"list note: {list_note}")
+			# print(f"list note: {list_note}")
 			n = 2*int(list_note[len(list_note)])
 			list_note[len(list_note)] = n
 			notes[len(notes)] = ''.join(list_note)
